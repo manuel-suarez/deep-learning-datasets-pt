@@ -1,5 +1,4 @@
 import os
-import numpy as np
 from torchvision.io import ImageReadMode, read_image
 from torch.utils.data import Dataset
 
