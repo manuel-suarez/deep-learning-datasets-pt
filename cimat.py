@@ -2,7 +2,7 @@ import os
 import torch
 import numpy as np
 import pandas as pd
-from torchvision.io import ImageReadMode, read_image
+from skimage.io import imread
 from torch.utils.data import Dataset
 
 
@@ -24,7 +24,7 @@ class CimatDataset(Dataset):
             "projects",
             "consorcio-ia",
             "data",
-            f"oil-spills_{dataset}",
+            f"oil_spills_{dataset}",
             "augmented_dataset",
         )
         self.features_dir = os.path.join(self.data_dir, "features")
@@ -50,7 +50,7 @@ class CimatDataset(Dataset):
             filename = os.path.join(
                 self.features_dir, feature, key + self.features_extension
             )
-            z = read_image(filename, ImageReadMode.GRAY)
+            z = torch.from_numpy(imread(filename, as_gray=True))
             features.append(z)
         x = torch.stack(features)
         # z = imread(filename, as_gray=True).astype(np.float32)
@@ -59,7 +59,9 @@ class CimatDataset(Dataset):
         #    x[..., j] = z
         # Load label
         filename = os.path.join(self.labels_dir, key + self.labels_extension)
-        y = read_image(filename)
+        y = torch.from_numpy(
+            np.expand_dims(imread(filename, as_gray=True).astype(np.float32) / 255.0, 0)
+        )
         # y = np.zeros((x.shape[0], x.shape[1], 1))
         # z = imread(filename, as_gray=True).astype(np.float32) / 255.0
 

@@ -40,10 +40,12 @@ train_dataset = CimatDataset(
     labels_extension=".pgm",
 )
 image, label = train_dataset[0]
+print(f"Tensor image shape: {image.shape}")
+print(f"Tensor label shape: {label.shape}")
 np_image = image.numpy()
 np_label = label.numpy()
-print(f"Image shape: {np_image.shape}")
-print(f"Label shape: {np_label.shape}")
+print(f"Numpy image shape: {np_image.shape}")
+print(f"Numpy label shape: {np_label.shape}")
 
 print(
     f"Image: max: {np.max(np_image)}, min: {np.min(np_image)}, values: {np.unique(np_image)}"
