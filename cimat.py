@@ -45,22 +45,41 @@ class CimatDataset(Dataset):
         # x = np.zeros(self.dims, dtype=np.float32)
         key = self.keys[idx]
         # Load features
-        features = []
-        for j, feature in enumerate(self.features_channels):
-            filename = os.path.join(
-                self.features_dir, feature, key + self.features_extension
-            )
-            z = torch.from_numpy(imread(filename, as_gray=True))
-            features.append(z)
-        x = torch.stack(features)
+        # features = []
+        # for j, feature in enumerate(self.features_channels):
+        #    filename = os.path.join(
+        #    self.features_dir, feature, key + self.features_extension
+        # )
+        #    z = torch.from_numpy(imread(filename, as_gray=True))
+        #    features.append(z)
+        x = torch.stack(
+            [
+                torch.from_numpy(
+                    imread(
+                        os.path.join(
+                            self.features_dir, feature, key + self.features_extension
+                        ),
+                        as_gray=True,
+                    )
+                )
+                for feature in self.features_channels
+            ]
+        )
         # z = imread(filename, as_gray=True).astype(np.float32)
 
         # if z.shape[0] == self.dims[0] and z.shape[1] == self.dims[1]:
         #    x[..., j] = z
         # Load label
-        filename = os.path.join(self.labels_dir, key + self.labels_extension)
+        # filename = os.path.join(self.labels_dir, key + self.labels_extension)
         y = torch.from_numpy(
-            np.expand_dims(imread(filename, as_gray=True).astype(np.float32) / 255.0, 0)
+            np.expand_dims(
+                imread(
+                    os.path.join(self.labels_dir, key + self.labels_extension),
+                    as_gray=True,
+                ).astype(np.float32)
+                / 255.0,
+                0,
+            )
         )
         # y = np.zeros((x.shape[0], x.shape[1], 1))
         # z = imread(filename, as_gray=True).astype(np.float32) / 255.0
