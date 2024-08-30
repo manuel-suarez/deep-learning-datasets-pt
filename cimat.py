@@ -15,6 +15,8 @@ class CimatDataset(Dataset):
         features_channels,
         features_extension,
         labels_extension,
+        learning_dir,
+        mode,
     ):
         super().__init__()
         # Initialization
@@ -29,9 +31,9 @@ class CimatDataset(Dataset):
         )
         self.features_dir = os.path.join(self.data_dir, "features")
         self.labels_dir = os.path.join(self.data_dir, "labels")
-        self.csv_datadir = os.path.join(self.data_dir, "learningCSV", "trainingFiles")
+        self.csv_datadir = os.path.join(self.data_dir, "learningCSV", learning_dir)
         csv_dataset = pd.read_csv(
-            os.path.join(self.csv_datadir, f"train{trainset}.csv")
+            os.path.join(self.csv_datadir, f"{mode}{trainset}.csv")
         )
         self.keys = csv_dataset["key"]
         self.features_channels = features_channels
@@ -108,6 +110,8 @@ if __name__ == "__main__":
         features_channels=feat_channels,
         features_extension=".tiff",
         labels_extension=".pgm",
+        learning_dir="trainingFiles",
+        mode="train",
     )
     image, label = train_dataset[0]
     print(f"Tensor image shape: {image.shape}")
