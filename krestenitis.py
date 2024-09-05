@@ -1,6 +1,9 @@
 import os
-from torchvision.io import ImageReadMode, read_image
+import torch
+import numpy as np
+from skimage.io import imread
 from torch.utils.data import Dataset
+from PIL import Image
 
 
 class KrestenitisDataset(Dataset):
@@ -24,8 +27,12 @@ class KrestenitisDataset(Dataset):
 
     def __getitem__(self, idx):
         # Read Image
-        image = read_image(self.images_fps[idx], ImageReadMode.GRAY)
-        label = read_image(self.labels_fps[idx])
+        image = torch.from_numpy(
+            np.expand_dims(imread(self.images_fps[idx], as_gray=True), 0)
+        ).type(torch.float)
+        label = torch.from_numpy(imread(self.labels_fps[idx], as_gray=True)).type(
+            torch.long
+        )
 
         return image, label
 
@@ -36,13 +43,13 @@ if __name__ == "__main__":
     import torchvision.transforms.functional as F
 
     home_dir = os.path.expanduser("~")
-    data_dir = os.path.join(home_dir, "data", "oil-spill-dataset")
+    data_dir = os.path.join(home_dir, "data", "oil-spill-dataset_256")
     train_dir = os.path.join(data_dir, "train")
 
     train_dataset = KrestenitisDataset(train_dir)
     image, label = train_dataset[0]
-    print(f"Tensor image shape: {image.shape}")
-    print(f"Tensor label shape: {label.shape}")
+    print(f"Tensor image shape, type: {image.shape}, {image.type()}")
+    print(f"Tensor label shape, type: {label.shape}, {label.type()}")
     np_image = image.numpy()
     np_label = label.numpy()
     print(f"Numpy image shape: {np_image.shape}")

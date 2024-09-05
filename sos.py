@@ -38,7 +38,6 @@ if __name__ == "__main__":
     import numpy as np
     import matplotlib.pyplot as plt
     import torchvision.transforms.functional as F
-    from tqdm import tqdm
     from torch.utils.data import DataLoader
 
     home_dir = os.path.expanduser("~")
