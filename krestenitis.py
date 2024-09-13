@@ -2,8 +2,7 @@ import os
 import torch
 import numpy as np
 from skimage.io import imread
-from torch.utils.data import Dataset
-from PIL import Image
+from torch.utils.data import Dataset, DataLoader
 
 
 class KrestenitisDataset(Dataset):
@@ -35,6 +34,39 @@ class KrestenitisDataset(Dataset):
         )
 
         return image, label
+
+
+def prepare_dataloaders(base_dir):
+    data_dir = os.path.join(base_dir, "data", "oil-spill-dataset_256")
+
+    train_dir = os.path.join(data_dir, "train")
+    train_dataset = KrestenitisDataset(
+        base_dir=train_dir,
+    )
+
+    valid_dir = os.path.join(data_dir, "val")
+    valid_dataset = KrestenitisDataset(
+        base_dir=valid_dir,
+    )
+
+    test_dir = os.path.join(data_dir, "test")
+    test_dataset = KrestenitisDataset(
+        base_dir=test_dir,
+    )
+    print(f"Training dataset length: {len(train_dataset)}")
+    print(f"Validation dataset length: {len(valid_dataset)}")
+    print(f"Testing dataset length: {len(test_dataset)}")
+
+    train_dataloader = DataLoader(
+        train_dataset, batch_size=16, pin_memory=True, shuffle=True, num_workers=12
+    )
+    valid_dataloader = DataLoader(
+        valid_dataset, batch_size=4, pin_memory=True, shuffle=False, num_workers=4
+    )
+    test_dataloader = DataLoader(
+        test_dataset, batch_size=4, pin_memory=True, shuffle=False, num_workers=4
+    )
+    return train_dataloader, valid_dataloader, test_dataloader
 
 
 if __name__ == "__main__":

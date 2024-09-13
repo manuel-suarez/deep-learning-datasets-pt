@@ -3,7 +3,7 @@ import torch
 import numpy as np
 import pandas as pd
 from skimage.io import imread
-from torch.utils.data import Dataset
+from torch.utils.data import Dataset, DataLoader
 
 
 class CimatDataset(Dataset):
@@ -93,6 +93,52 @@ class CimatDataset(Dataset):
         # x = torch.tensor(x).permute(2, 0, 1)
         # y = torch.tensor(y).permute(2, 0, 1)
         return x, y
+
+
+def prepare_dataloaders(base_dir, dataset, trainset, feat_channels):
+    train_dataset = CimatDataset(
+        base_dir=base_dir,
+        dataset=dataset,
+        trainset=trainset,
+        features_channels=feat_channels,
+        features_extension=".tiff",
+        labels_extension=".pgm",
+        learning_dir="trainingFiles",
+        mode="train",
+    )
+
+    valid_dataset = CimatDataset(
+        base_dir=base_dir,
+        dataset=dataset,
+        trainset=trainset,
+        features_channels=feat_channels,
+        features_extension=".tiff",
+        labels_extension=".pgm",
+        learning_dir="crossFiles",
+        mode="cross",
+    )
+
+    test_dataset = CimatDataset(
+        base_dir=base_dir,
+        dataset=dataset,
+        trainset=trainset,
+        features_channels=feat_channels,
+        features_extension=".tiff",
+        labels_extension=".pgm",
+        learning_dir="testingFiles",
+        mode="test",
+    )
+
+    train_dataloader = DataLoader(
+        train_dataset, batch_size=16, pin_memory=True, shuffle=True, num_workers=12
+    )
+    valid_dataloader = DataLoader(
+        valid_dataset, batch_size=4, pin_memory=True, shuffle=False, num_workers=4
+    )
+    test_dataloader = DataLoader(
+        test_dataset, batch_size=4, pin_memory=True, shuffle=False, num_workers=4
+    )
+    return train_dataloader, valid_dataloader, test_dataloader
 
 
 if __name__ == "__main__":
