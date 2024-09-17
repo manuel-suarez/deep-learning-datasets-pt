@@ -1,5 +1,7 @@
 import os
+import torch
 import numpy as np
+import pandas as pd
 from PIL import Image
 from matplotlib import pyplot as plt
 from skimage.io import imread
@@ -151,7 +153,7 @@ def save_predictions(batch_idx, images, labels, predictions, directory):
         image = image.astype(np.uint8)
         image_p = Image.fromarray(image)
         image_p = image_p.convert("L")
-        image_p.save(os.path.join(directory, f"batch{idx_batch}_image{idx_image}.png"))
+        image_p.save(os.path.join(directory, f"batch{batch_idx}_image{idx_image}.png"))
     for idx_label, label in enumerate(labels):
         # label = np.transpose(label, (1, 2, 0))
         label = np.squeeze(label)
@@ -160,7 +162,7 @@ def save_predictions(batch_idx, images, labels, predictions, directory):
         label = label.astype(np.uint8)
         label_p = Image.fromarray(label)
         label_p = label_p.convert("L")
-        label_p.save(os.path.join(directory, f"batch{idx_batch}_label{idx_label}.png"))
+        label_p.save(os.path.join(directory, f"batch{batch_idx}_label{idx_label}.png"))
     for idx_prediction, prediction in enumerate(predictions):
         # prediction = np.transpose(prediction, (1, 2, 0))
         prediction = np.squeeze(prediction)
