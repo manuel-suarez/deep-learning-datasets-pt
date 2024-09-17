@@ -52,7 +52,7 @@ def get_dataloaders(base_dir, name, args=None):
         return prepare_krestenitis_dataloaders(base_dir)
     if name == "sos":
         return prepare_sos_dataloaders(base_dir)
-    if name == "chn6-cug":
+    if name == "chn6_cug":
         return prepare_chn6_dataloaders(base_dir)
     # To be implemented
     raise Exception(f"Dataset {name} it's currently not implemented!")
@@ -65,7 +65,7 @@ def get_savers(name):
         return save_krestenitis_predictions, save_krestenitis_figures
     if name == "sos":
         return save_sos_predictions, save_sos_figures
-    if name == "chn6-cug":
+    if name == "chn6_cug":
         return save_chn6_predictions, save_chn6_figures
     raise Exception(
         f"Save predictions and figures functions of dataset {name} it's currently not implemented!"

@@ -73,28 +73,27 @@ def prepare_dataloaders(base_dir):
 
 def save_predictions(batch_idx, images, labels, predictions, directory):
     for idx_image, image in enumerate(images):
+        print(f"\t{idx_image} image shape: ", image.shape)
         # Image in CHN6-CUG is color image (three channel)
-        image = np.squeeze(image)
-        # print(f"\t{idx_image} image shape: ", image.shape)
-        # image = np.transpose(image, (1, 2, 0))
+        image = np.transpose(image, (1, 2, 0))
         image = image * 255
         image = image.astype(np.uint8)
         image_p = Image.fromarray(image)
         image_p = image_p.convert("L")
-        image_p.save(os.path.join(directory, f"batch{idx_batch}_image{idx_image}.png"))
+        image_p.save(os.path.join(directory, f"batch{batch_idx}_image{idx_image}.png"))
     for idx_label, label in enumerate(labels):
+        print(f"\t{idx_label} label shape: ", label.shape)
         # label = np.transpose(label, (1, 2, 0))
         label = np.squeeze(label)
-        # print(f"\t{idx_label} label shape: ", label.shape)
         label = label * 255
         label = label.astype(np.uint8)
         label_p = Image.fromarray(label)
         label_p = label_p.convert("L")
-        label_p.save(os.path.join(directory, f"batch{idx_batch}_label{idx_label}.png"))
+        label_p.save(os.path.join(directory, f"batch{batch_idx}_label{idx_label}.png"))
     for idx_prediction, prediction in enumerate(predictions):
+        print(f"\t{idx_prediction} prediction shape: ", prediction.shape)
         # prediction = np.transpose(prediction, (1, 2, 0))
         prediction = np.squeeze(prediction)
-        # print(f"\t{idx_prediction} prediction shape: ", prediction.shape)
         prediction_p = Image.fromarray((prediction * 255).astype(np.uint8))
         prediction_p = prediction_p.convert("L")
         prediction_p.save(
