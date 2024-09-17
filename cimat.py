@@ -36,7 +36,8 @@ class CimatDataset(Dataset):
             os.path.join(self.csv_datadir, f"{mode}{trainset}.csv")
         )
         self.keys = csv_dataset["key"]
-        self.features_channels = features_channels
+        channels = {"o": "ORIGIN", "v": "VAR", "w": "WIND"}
+        self.features_channels = [channels[feat] for feat in features_channels]
         self.features_extension = features_extension
         self.labels_extension = labels_extension
 
