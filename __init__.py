@@ -20,6 +20,7 @@ def get_dataloaders(base_dir, name, args=None):
     * STARE
     """
     if name == "cimat":
+        print(args)
         if (args == None) or not (
             ("dataset" in args) and ("trainset" in args) and ("channels" in args)
         ):
