@@ -20,13 +20,17 @@ def get_dataloaders(base_dir, name, args=None):
     * STARE
     """
     if name == "cimat":
-        print(args)
         if (args == None) or not (
-            ("dataset" in args) and ("trainset" in args) and ("channels" in args)
+            ("dataset_num" in args)
+            and ("trainset_num" in args)
+            and ("dataset_channels" in args)
         ):
             raise Exception("Faltan argumentos para el dataset cimat")
         return prepare_cimat_dataloaders(
-            base_dir, args["dataset"], args["trainset"], args["channels"]
+            base_dir,
+            args["dataset_num"],
+            args["trainset_num"],
+            args["dataset_channels"],
         )
     if name == "krestenitis":
         return prepare_krestenitis_dataloaders(base_dir)
