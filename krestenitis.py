@@ -94,6 +94,8 @@ def save_predictions(batch_idx, images, labels, predictions, directory):
     for idx_prediction, prediction in enumerate(predictions):
         print(f"\t{idx_prediction} prediction shape: ", prediction.shape)
         # prediction = np.transpose(prediction, (1, 2, 0))
+        prediction = np.argmax(prediction, axis=0, keepdims=True)
+        print(f"\t{idx_prediction} prediction shape: ", prediction.shape)
         prediction = np.squeeze(prediction)
         prediction_p = Image.fromarray((prediction * 255).astype(np.uint8))
         prediction_p = prediction_p.convert("L")
@@ -106,12 +108,16 @@ def save_predictions(batch_idx, images, labels, predictions, directory):
 
 
 def save_figures(batch_idx, images, labels, predictions, directory):
+    print("Shapes:")
+    print("\tImages: ", images.shape)
+    print("\tLabels: ", labels.shape)
+    print("\tPredictions: ", predictions.shape)
     fig, axs = plt.subplots(1, 3, figsize=(12, 8))
     axs[0].imshow(images[0, 0, :, :])
     axs[0].set_title("Imagen")
     axs[1].imshow(predictions[0, 0, :, :])
     axs[1].set_title("Prediction")
-    axs[2].imshow(labels[0, 0, :, :])
+    axs[2].imshow(labels[0, :, :])
     axs[2].set_title("Label")
     plt.savefig(os.path.join(directory, f"result_batch{batch_idx}.png"))
     plt.close()
