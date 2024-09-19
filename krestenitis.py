@@ -73,7 +73,7 @@ def prepare_dataloaders(base_dir):
 
 def save_predictions(batch_idx, images, labels, predictions, directory):
     for idx_image, image in enumerate(images):
-        print(f"\t{idx_image} image shape: ", image.shape)
+        # print(f"\t{idx_image} image shape: ", image.shape)
         # Image in krestenitis is gray image (one channel)
         image = np.squeeze(image)
         # image = np.transpose(image, (1, 2, 0))
@@ -83,7 +83,7 @@ def save_predictions(batch_idx, images, labels, predictions, directory):
         image_p = image_p.convert("L")
         image_p.save(os.path.join(directory, f"batch{batch_idx}_image{idx_image}.png"))
     for idx_label, label in enumerate(labels):
-        print(f"\t{idx_label} label shape: ", label.shape)
+        # print(f"\t{idx_label} label shape: ", label.shape)
         # label = np.transpose(label, (1, 2, 0))
         label = np.squeeze(label)
         label = label * 255
@@ -92,10 +92,10 @@ def save_predictions(batch_idx, images, labels, predictions, directory):
         label_p = label_p.convert("L")
         label_p.save(os.path.join(directory, f"batch{batch_idx}_label{idx_label}.png"))
     for idx_prediction, prediction in enumerate(predictions):
-        print(f"\t{idx_prediction} prediction shape: ", prediction.shape)
+        # print(f"\t{idx_prediction} prediction shape: ", prediction.shape)
         # prediction = np.transpose(prediction, (1, 2, 0))
         prediction = np.argmax(prediction, axis=0, keepdims=True)
-        print(f"\t{idx_prediction} prediction shape: ", prediction.shape)
+        # print(f"\t{idx_prediction} prediction shape: ", prediction.shape)
         prediction = np.squeeze(prediction)
         prediction_p = Image.fromarray((prediction * 255).astype(np.uint8))
         prediction_p = prediction_p.convert("L")
@@ -108,10 +108,10 @@ def save_predictions(batch_idx, images, labels, predictions, directory):
 
 
 def save_figures(batch_idx, images, labels, predictions, directory):
-    print("Shapes:")
-    print("\tImages: ", images.shape)
-    print("\tLabels: ", labels.shape)
-    print("\tPredictions: ", predictions.shape)
+    # print("Shapes:")
+    # print("\tImages: ", images.shape)
+    # print("\tLabels: ", labels.shape)
+    # print("\tPredictions: ", predictions.shape)
     fig, axs = plt.subplots(1, 3, figsize=(12, 8))
     axs[0].imshow(images[0, 0, :, :])
     axs[0].set_title("Imagen")
