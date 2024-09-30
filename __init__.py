@@ -1,4 +1,4 @@
-from datasets.cimat import (
+from datasets.cimat_mr import (
     prepare_dataloaders as prepare_cimat_dataloaders,
     save_predictions as save_cimat_predictions,
     save_figures as save_cimat_figures,
