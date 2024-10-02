@@ -48,6 +48,7 @@ class CimatMRDataset(Dataset):
         return len(self.keys)
 
     def __getitem__(self, idx):
+        # print("get item: ", idx)
         # x = np.zeros(self.dims, dtype=np.float32)
         key = self.keys[idx]
         # Load features
@@ -62,21 +63,38 @@ class CimatMRDataset(Dataset):
         # x = torch.stack(
         #     [
         # Open original feature
-        x = imread(
-            os.path.join(self.features_dir, "ORIGIN", key + self.features_extension),
-            as_gray=True,
+        x = np.expand_dims(
+            imread(
+                os.path.join(
+                    self.features_dir, "ORIGIN", key + self.features_extension
+                ),
+                as_gray=True,
+            ),
+            0,
         )
+        # print("Numpy shapres: ")
+        # print("x shape: ", x.shape)
         # Wavelet decomposition (Get three levels of resolution)
         x1, (_, _, _) = pywt.dwt2(x, "db1")
         x2, (_, _, _) = pywt.dwt2(x1, "db1")
         x3, (_, _, _) = pywt.dwt2(x2, "db1")
         x4, (_, _, _) = pywt.dwt2(x3, "db1")
+        # print("x1: ", x1.shape)
+        # print("x2: ", x2.shape)
+        # print("x3: ", x3.shape)
+        # print("x4: ", x4.shape)
         # Convert to torch tensor
-        x = torch.from_numpy(x)
-        x1 = torch.from_numpy(x1)
-        x2 = torch.from_numpy(x2)
-        x3 = torch.from_numpy(x3)
-        x4 = torch.from_numpy(x4)
+        x = torch.from_numpy(x).type(torch.float)
+        x1 = torch.from_numpy(x1).type(torch.float)
+        x2 = torch.from_numpy(x2).type(torch.float)
+        x3 = torch.from_numpy(x3).type(torch.float)
+        x4 = torch.from_numpy(x4).type(torch.float)
+        # print("Tensor shapes: ")
+        # print("x: ", x.shape)
+        # print("x1: ", x1.shape)
+        # print("x2: ", x2.shape)
+        # print("x3: ", x3.shape)
+        # print("x4: ", x4.shape)
 
         #        for feature in self.features_channels
         #    ]
