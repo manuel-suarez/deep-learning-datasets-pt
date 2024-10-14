@@ -125,7 +125,8 @@ class CimatMRDataset(Dataset):
         # x = torch.tensor(x).permute(2, 0, 1)
         # y = torch.tensor(y).permute(2, 0, 1)
         # Return as a tuple
-        return (x, x1, x2, x3, x4), y
+        # return (x, x1, x2, x3, x4), y
+        return x, y
 
 
 def prepare_dataloaders(base_dir, dataset, trainset, feat_channels):
