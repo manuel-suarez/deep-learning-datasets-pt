@@ -37,7 +37,7 @@ class CimatDataset(Dataset):
         self.labels_dir = os.path.join(self.data_dir, "labels")
         self.csv_datadir = os.path.join(self.data_dir, "learningCSV", learning_dir)
         csv_dataset = pd.read_csv(
-            os.path.join(self.csv_datadir, f"{training_mode}{trainset}.csv"), nrows=1024
+            os.path.join(self.csv_datadir, f"{training_mode}{trainset}.csv")
         )
         self.keys = csv_dataset["key"]
         channels = {"o": "ORIGIN", "v": "VAR", "w": "WIND"}
@@ -169,7 +169,7 @@ def prepare_dataloaders(
         labels_extension=".pgm",
         learning_dir="testingFiles",
         training_mode="test",
-        wavelets_mode=wavelets_mode
+        wavelets_mode=wavelets_mode,
     )
 
     train_dataloader = DataLoader(
