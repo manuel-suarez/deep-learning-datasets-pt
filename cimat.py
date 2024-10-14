@@ -18,7 +18,7 @@ class CimatDataset(Dataset):
         features_extension,
         labels_extension,
         learning_dir,
-        mode,
+        training_mode,
     ):
         super().__init__()
         # Initialization
@@ -35,7 +35,7 @@ class CimatDataset(Dataset):
         self.labels_dir = os.path.join(self.data_dir, "labels")
         self.csv_datadir = os.path.join(self.data_dir, "learningCSV", learning_dir)
         csv_dataset = pd.read_csv(
-            os.path.join(self.csv_datadir, f"{mode}{trainset}.csv"), nrows=1024
+            os.path.join(self.csv_datadir, f"{training_mode}{trainset}.csv"), nrows=1024
         )
         self.keys = csv_dataset["key"]
         channels = {"o": "ORIGIN", "v": "VAR", "w": "WIND"}
@@ -107,7 +107,7 @@ def prepare_dataloaders(base_dir, dataset, trainset, feat_channels):
         features_extension=".tiff",
         labels_extension=".pgm",
         learning_dir="trainingFiles",
-        mode="train",
+        training_mode="train",
     )
 
     valid_dataset = CimatDataset(
@@ -118,7 +118,7 @@ def prepare_dataloaders(base_dir, dataset, trainset, feat_channels):
         features_extension=".tiff",
         labels_extension=".pgm",
         learning_dir="crossFiles",
-        mode="cross",
+        training_mode="cross",
     )
 
     test_dataset = CimatDataset(
@@ -129,7 +129,7 @@ def prepare_dataloaders(base_dir, dataset, trainset, feat_channels):
         features_extension=".tiff",
         labels_extension=".pgm",
         learning_dir="testingFiles",
-        mode="test",
+        training_mode="test",
     )
 
     train_dataloader = DataLoader(
