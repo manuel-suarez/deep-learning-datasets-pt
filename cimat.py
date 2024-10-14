@@ -1,4 +1,5 @@
 import os
+import pywt
 import torch
 import numpy as np
 import pandas as pd
@@ -19,6 +20,7 @@ class CimatDataset(Dataset):
         labels_extension,
         learning_dir,
         training_mode,
+        wavelets_mode,
     ):
         super().__init__()
         # Initialization
@@ -42,6 +44,7 @@ class CimatDataset(Dataset):
         self.features_channels = [channels[feat] for feat in features_channels]
         self.features_extension = features_extension
         self.labels_extension = labels_extension
+        self.wavelets_mode = wavelets_mode
 
     def __len__(self):
         return len(self.keys)
@@ -49,33 +52,17 @@ class CimatDataset(Dataset):
     def __getitem__(self, idx):
         # x = np.zeros(self.dims, dtype=np.float32)
         key = self.keys[idx]
-        # Load features
-        # features = []
-        # for j, feature in enumerate(self.features_channels):
-        #    filename = os.path.join(
-        #    self.features_dir, feature, key + self.features_extension
-        # )
-        #    z = torch.from_numpy(imread(filename, as_gray=True))
-        #    features.append(z)
-        x = torch.stack(
-            [
-                torch.from_numpy(
-                    imread(
-                        os.path.join(
-                            self.features_dir, feature, key + self.features_extension
-                        ),
-                        as_gray=True,
-                    )
-                )
-                for feature in self.features_channels
-            ]
-        )
-        # z = imread(filename, as_gray=True).astype(np.float32)
-
-        # if z.shape[0] == self.dims[0] and z.shape[1] == self.dims[1]:
-        #    x[..., j] = z
         # Load label
         # filename = os.path.join(self.labels_dir, key + self.labels_extension)
+        # y = np.zeros((x.shape[0], x.shape[1], 1))
+        # z = imread(filename, as_gray=True).astype(np.float32) / 255.0
+
+        # if z.shape[0] == self.dims[0] and z.shape[1] == self.dims[1]:
+        #    y[..., 0] = z
+
+        # Make C,H,W
+        # x = torch.tensor(x).permute(2, 0, 1)
+        # y = torch.tensor(y).permute(2, 0, 1)
         y = torch.from_numpy(
             np.expand_dims(
                 imread(
@@ -86,19 +73,69 @@ class CimatDataset(Dataset):
                 0,
             )
         )
-        # y = np.zeros((x.shape[0], x.shape[1], 1))
-        # z = imread(filename, as_gray=True).astype(np.float32) / 255.0
+        # Load features
+        # features = []
+        # for j, feature in enumerate(self.features_channels):
+        #    filename = os.path.join(
+        #    self.features_dir, feature, key + self.features_extension
+        # )
+        #    z = torch.from_numpy(imread(filename, as_gray=True))
+        #    features.append(z)
+        # On wavelets mode we need to open only one channel (the first) and apply wavelets decomposition
+        if self.wavelets_mode == False:
+            x = torch.stack(
+                [
+                    torch.from_numpy(
+                        imread(
+                            os.path.join(
+                                self.features_dir,
+                                feature,
+                                key + self.features_extension,
+                            ),
+                            as_gray=True,
+                        )
+                    )
+                    for feature in self.features_channels
+                ]
+            )
+            return x, y
+        if self.wavelets_mode >= 0:
+            x = np.expand_dims(
+                imread(
+                    os.path.join(
+                        self.features_dir, "ORIGIN", key + self.features_extension
+                    ),
+                    as_gray=True,
+                ),
+                0,
+            )
+            # print("Numpy shapres: ")
+            # print("x shape: ", x.shape)
+            # Wavelet decomposition (Get three levels of resolution)
+            x1, (_, _, _) = pywt.dwt2(x, "db1")
+            x2, (_, _, _) = pywt.dwt2(x1, "db1")
+            x3, (_, _, _) = pywt.dwt2(x2, "db1")
+            x4, (_, _, _) = pywt.dwt2(x3, "db1")
+            # print("x1: ", x1.shape)
+            # print("x2: ", x2.shape)
+            # print("x3: ", x3.shape)
+            # print("x4: ", x4.shape)
+            # Convert to torch tensor
+            x = torch.from_numpy(x).type(torch.float)
+            x1 = torch.from_numpy(x1).type(torch.float)
+            x2 = torch.from_numpy(x2).type(torch.float)
+            x3 = torch.from_numpy(x3).type(torch.float)
+            x4 = torch.from_numpy(x4).type(torch.float)
+            return (x, x1, x2, x3, x4), y
+        # z = imread(filename, as_gray=True).astype(np.float32)
 
         # if z.shape[0] == self.dims[0] and z.shape[1] == self.dims[1]:
-        #    y[..., 0] = z
-
-        # Make C,H,W
-        # x = torch.tensor(x).permute(2, 0, 1)
-        # y = torch.tensor(y).permute(2, 0, 1)
-        return x, y
+        #    x[..., j] = z
 
 
-def prepare_dataloaders(base_dir, dataset, trainset, feat_channels):
+def prepare_dataloaders(
+    base_dir, dataset, trainset, feat_channels, wavelets_mode=False
+):
     train_dataset = CimatDataset(
         base_dir=base_dir,
         dataset=dataset,
@@ -108,6 +145,7 @@ def prepare_dataloaders(base_dir, dataset, trainset, feat_channels):
         labels_extension=".pgm",
         learning_dir="trainingFiles",
         training_mode="train",
+        wavelets_mode=wavelets_mode,
     )
 
     valid_dataset = CimatDataset(
@@ -119,6 +157,7 @@ def prepare_dataloaders(base_dir, dataset, trainset, feat_channels):
         labels_extension=".pgm",
         learning_dir="crossFiles",
         training_mode="cross",
+        wavelets_mode=wavelets_mode,
     )
 
     test_dataset = CimatDataset(
@@ -130,6 +169,7 @@ def prepare_dataloaders(base_dir, dataset, trainset, feat_channels):
         labels_extension=".pgm",
         learning_dir="testingFiles",
         training_mode="test",
+        wavelets_mode=wavelets_mode
     )
 
     train_dataloader = DataLoader(

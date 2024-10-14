@@ -1,4 +1,4 @@
-from datasets.cimat_mr import (
+from datasets.cimat import (
     prepare_dataloaders as prepare_cimat_dataloaders,
     save_predictions as save_cimat_predictions,
     save_figures as save_cimat_figures,
@@ -40,13 +40,15 @@ def get_dataloaders(base_dir, name, args=None):
             ("dataset_num" in args)
             and ("trainset_num" in args)
             and ("dataset_channels" in args)
+            and ("wavelets_mode" in args)
         ):
-            raise Exception("Faltan argumentos para el dataset cimat")
+            raise Exception("Faltan argumentos para el dataset cimat: ", args)
         return prepare_cimat_dataloaders(
-            base_dir,
-            args["dataset_num"],
-            args["trainset_num"],
-            args["dataset_channels"],
+            base_dir=base_dir,
+            dataset=args["dataset_num"],
+            trainset=args["trainset_num"],
+            feat_channels=args["dataset_channels"],
+            wavelets_mode=args["wavelets_mode"],
         )
     if name == "krestenitis":
         return prepare_krestenitis_dataloaders(base_dir)
