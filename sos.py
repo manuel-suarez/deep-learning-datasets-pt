@@ -37,7 +37,7 @@ class SOSDataset(Dataset):
 
 
 def prepare_dataloaders(base_dir):
-    data_dir = os.path.join(base_dir, "data", "SOS_dataset")
+    data_dir = os.path.join(base_dir, "data", "sos")
 
     train_dir = os.path.join(data_dir, "train")
     train_dataset = SOSDataset(
